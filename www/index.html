@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>My Money</title>
+<style>
+:root{--g:#16a34a;--r:#e5484d;--ink:#111;--mut:#6b7280;--line:#ececec;--soft:#f5f6f5;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:#fff;color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;touch-action:manipulation;overscroll-behavior-y:none}
+main{max-width:720px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-right)) 128px max(16px,env(safe-area-inset-left))}
+[hidden]{display:none!important}
+h2{font-size:18px;margin:22px 0 6px}
+small{color:var(--mut)}
+.inc{color:var(--g)}.exp{color:var(--r)}
+.bal{border:1px solid var(--line);border-radius:18px;padding:20px 16px 10px;text-align:center}
+.bal>small{font-size:14px}
+.bal>b{display:block;font-size:38px;letter-spacing:-1px;margin:2px 0}
+.bal .sub{color:var(--mut);font-size:14px}
+.bal .sub b{color:var(--ink)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.btn{border:0;border-radius:14px;padding:15px;font:inherit;font-size:17px;font-weight:700;color:#fff;cursor:pointer}
+.btn.g{background:var(--g)}.btn.k{background:var(--ink)}.btn.wide{width:100%;margin-top:12px}
+.lnk{background:none;border:0;color:var(--g);font:inherit;font-weight:600;cursor:pointer;padding:8px}
+.hd{display:flex;justify-content:space-between;align-items:center}
+.hd h2{margin:18px 0 0}
+.row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+.row .t{flex:1;min-width:0}
+.row .t div{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.amt{font-weight:700;white-space:nowrap}
+.ib{border:0;background:none;color:#aaa;font-size:17px;cursor:pointer;padding:4px 6px}
+.ok{border:1.5px solid var(--g);color:var(--g);background:#fff;border-radius:10px;padding:6px 10px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.late{color:var(--r)}
+.day{font-size:13px;font-weight:700;color:var(--mut);margin:16px 0 0;text-transform:uppercase;letter-spacing:.4px}
+.empty{color:var(--mut);text-align:center;padding:18px 0}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.chip{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:20px;padding:7px 13px;font:inherit;font-size:14px;cursor:pointer}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px));width:calc(100% - 28px);max-width:420px;display:flex;gap:2px;padding:5px;border-radius:32px;background:rgba(244,246,245,.55);-webkit-backdrop-filter:blur(24px) saturate(190%);backdrop-filter:blur(24px) saturate(190%);border:1px solid rgba(255,255,255,.75);box-shadow:0 10px 32px rgba(0,0,0,.16),0 1px 0 rgba(255,255,255,.95) inset,0 -1px 0 rgba(0,0,0,.05) inset;z-index:10}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.tabbar{background:rgba(250,250,250,.96)}}
+.tabbar button{flex:1;position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:2px;border:0;background:none;padding:8px 2px 7px;font:inherit;font-size:11px;font-weight:600;color:#3c3c43;border-radius:27px;cursor:pointer;transition:color .3s,transform .15s}
+.tabbar svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tabbar button.on{color:#0f7a37}
+.tabbar button.on svg{animation:pop .5s cubic-bezier(.3,1.4,.5,1)}
+.tabbar button:active{transform:scale(.94)}
+.ind{position:absolute;left:0;top:5px;bottom:5px;width:0;border-radius:27px;background:rgba(22,163,74,.16);box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 0 0 1px rgba(22,163,74,.12) inset,0 4px 12px rgba(22,163,74,.14);will-change:transform;pointer-events:none}
+@keyframes pop{0%{transform:scale(.8)}55%{transform:scale(1.2)}100%{transform:scale(1)}}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+main>section{animation:fi .32s cubic-bezier(.2,.8,.2,1)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.sum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.sum div{background:var(--soft);border-radius:12px;padding:10px 8px;text-align:center}
+.sum small{display:block;font-size:12px}.sum b{font-size:15px}
+.chart{border:1px solid var(--line);border-radius:14px;padding:6px}
+.chart svg{width:100%;height:auto;display:block}
+.tl{font-size:9px;fill:#6b7280;text-anchor:middle}
+.det{background:var(--soft);border-radius:14px;padding:4px 14px;margin-top:10px}
+.det h3{font-size:15px;margin:10px 0 0}
+.det .row:last-child{border-bottom:0}
+.cat{font-size:14px;margin:10px 0}
+.cat>div:first-child{display:flex;justify-content:space-between}
+.bar{height:7px;background:var(--soft);border-radius:4px;overflow:hidden;margin-top:4px}
+.bar i{display:block;height:100%}
+.bar i.inc{background:var(--g)}.bar i.exp{background:var(--r)}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:flex-end;z-index:20}
+.sheet{background:#fff;width:100%;max-width:720px;margin:0 auto;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));max-height:92%;overflow:auto}
+.sheet h3{margin:0 0 12px;font-size:19px}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--soft);border-radius:12px;padding:3px;margin-bottom:12px}
+.seg button{border:0;background:none;padding:10px;border-radius:10px;font:inherit;font-weight:600;color:var(--mut);cursor:pointer}
+.seg button.on{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.15);color:var(--ink)}
+.sheet input[type=number]{width:100%;font:inherit;font-size:30px;font-weight:700;border:0;border-bottom:2px solid var(--ink);padding:6px 0;outline:0;background:#fff;color:var(--ink)}
+.sheet input[type=text],.sheet input[type=date]{width:100%;font:inherit;padding:12px;border:1px solid var(--line);border-radius:12px;margin-top:8px;background:#fff;color:var(--ink)}
+.chk{display:flex;gap:8px;align-items:center;margin-top:12px;color:var(--mut);font-size:14px}
+.hint{color:var(--mut);font-size:14px}
+@media (max-width:380px){.bal>b{font-size:31px}.sum b{font-size:13px}.sum div{padding:9px 4px}.tabbar{width:calc(100% - 20px)}.tabbar button{font-size:10px}.tabbar svg{width:20px;height:20px}.btn{font-size:16px;padding:13px}h2{font-size:17px}}
+@media (min-width:430px){.bal>b{font-size:42px}}
+</style>
+</head>
+<body>
+<main>
+  <section id="v_home"></section>
+  <section id="v_hist" hidden></section>
+  <section id="v_plan" hidden></section>
+  <section id="v_stat" hidden></section>
+</main>
+<nav class="tabbar" id="tabbar"><i class="ind" id="ind"></i>
+  <button data-t="home" class="on"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg><span>Главная</span></button>
+  <button data-t="hist"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>История</span></button>
+  <button data-t="plan"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>Планы</span></button>
+  <button data-t="stat"><svg viewBox="0 0 24 24"><path d="M5 20V11M12 20V4M19 20v-7"/></svg><span>Статистика</span></button>
+</nav>
+<div class="ov" id="ov" hidden><div class="sheet" id="sheet"></div></div>
+
+<script>
+var EXP=["Продукты","Жильё","Транспорт","Кафе","Здоровье","Одежда","Развлечения","Подписки","Прочее"];
+var INC=["Зарплата","Подработка","Подарок","Неожиданный доход","Прочее"];
+var MON=["янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"];
+var S={start:0,tx:[],plans:[]},TAB="home",F="all",P="30",SEL=null,SH={};
+(function(){try{var r=localStorage.getItem("fin2");if(r){S=JSON.parse(r);return}
+var o=localStorage.getItem("fin1");if(o){o=JSON.parse(o);
+S.tx=(o.tx||[]).map(function(x){return{id:x.id,type:x.type,amt:x.amt,cat:x.cat,note:x.note||"",date:x.date}});
+S.plans=(o.plans||[]).map(function(p){return{id:p.id,type:"exp",amt:p.amt,cat:p.cat,note:p.title,date:p.date,rec:p.rec}})}}catch(e){}})();
+function pushBal(){try{var W=window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.WidgetBridge;if(W)W.setBalance({balance:bal()})}catch(e){}}
+function save(){try{localStorage.setItem("fin2",JSON.stringify(S))}catch(e){}pushBal()}
+function $(i){return document.getElementById(i)}
+function fmt(n){return new Intl.NumberFormat("ru-RU",{style:"currency",currency:"RUB",minimumFractionDigits:0,maximumFractionDigits:2}).format(n)}
+function cmp(n){return n>=1000?(n/1000).toFixed(n>=10000?0:1).replace(".0","")+"к":String(Math.round(n))}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function pad(n){return String(n).padStart(2,"0")}
+function ds(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+function today(){return ds(new Date())}
+function addDays(s,n){var p=s.split("-").map(Number);return ds(new Date(p[0],p[1]-1,p[2]+n))}
+function addMonth(s){var p=s.split("-").map(Number),d=new Date(p[0],p[1],p[2]);if(d.getDate()!==p[2])d=new Date(p[0],p[1]+1,0);return ds(d)}
+function fd(s){var p=s.split("-");return p[2]+"."+p[1]+"."+p[0]}
+function sg(x){return x.type==="inc"?x.amt:-x.amt}
+function sumS(a){return a.reduce(function(s,x){return s+sg(x)},0)}
+function bal(){return S.start+sumS(S.tx)}
+function sgn(x){return(x.type==="inc"?"+":"−")+fmt(x.amt)}
+
+function txRow(x,del){return '<div class="row"><div class="t"><div>'+esc(x.note||x.cat)+'</div><small>'+esc(x.cat)+' · '+fd(x.date)+'</small></div><span class="amt '+x.type+'">'+sgn(x)+'</span>'+(del?'<button class="ib" aria-label="Удалить" onclick="delTx(\''+x.id+'\')">✕</button>':'')+'</div>'}
+function planRow(p){var late=p.date<today();return '<div class="row"><div class="t"><div>'+esc(p.note||p.cat)+(p.rec?" ↻":"")+'</div><small class="'+(late?"late":"")+'">'+fd(p.date)+(late?" · просрочено":"")+' · '+esc(p.cat)+'</small></div><span class="amt '+p.type+'">'+sgn(p)+'</span><button class="ok" onclick="pay(\''+p.id+'\')">'+(p.type==="inc"?"Получено":"Оплатить")+'</button><button class="ib" aria-label="Удалить" onclick="delPl(\''+p.id+'\')">✕</button></div>'}
+function sortedTx(){return S.tx.slice().reverse().sort(function(a,b){return b.date.localeCompare(a.date)})}
+function sortedPl(){return S.plans.slice().sort(function(a,b){return a.date.localeCompare(b.date)})}
+
+function delTx(id){S.tx=S.tx.filter(function(x){return x.id!==id});save();render()}
+function delPl(id){S.plans=S.plans.filter(function(x){return x.id!==id});save();render()}
+function pay(id){var p=S.plans.find(function(x){return x.id===id});if(!p)return;
+S.tx.push({id:uid(),type:p.type,amt:p.amt,cat:p.cat,note:p.note,date:today()});
+if(p.rec)p.date=addMonth(p.date);else S.plans=S.plans.filter(function(x){return x.id!==id});save();render()}
+
+function setTab(t){TAB=t;render()}
+document.querySelectorAll("#tabbar button").forEach(function(b){b.onclick=function(){setTab(b.dataset.t)}});
+
+function home(){
+var b=bal(),pl=sortedPl(),pd=sumS(S.plans),rec=sortedTx().slice(0,5);
+return '<div class="bal"><small>Баланс сейчас</small><b>'+fmt(b)+'</b><div class="sub">С учётом планов: <b>'+fmt(b+pd)+'</b></div><button class="lnk" onclick="openSheet(\'bal\')">Изменить баланс</button></div>'+
+'<div class="two"><button class="btn g" onclick="openSheet(\'tx\',\'inc\')">+ Доход</button><button class="btn k" onclick="openSheet(\'tx\',\'exp\')">− Расход</button></div>'+
+'<div class="hd"><h2>Ближайшие планы</h2><button class="lnk" onclick="openSheet(\'plan\',\'exp\')">+ Запланировать</button></div>'+
+(pl.length?pl.slice(0,3).map(planRow).join(""):'<div class="empty">Будущих расходов нет</div>')+
+'<h2>Последние операции</h2>'+(rec.length?rec.map(function(x){return txRow(x,false)}).join(""):'<div class="empty">Добавьте первую операцию</div>')}
+
+function hist(){
+var chips=[["all","Все"],["inc","Доходы"],["exp","Расходы"]].map(function(c){return '<button class="chip'+(F===c[0]?" on":"")+'" onclick="F=\''+c[0]+'\';render()">'+c[1]+'</button>'}).join("");
+var list=sortedTx().filter(function(x){return F==="all"||x.type===F}),cur="",h='<h2>История</h2><div class="chips">'+chips+'</div>';
+if(!list.length)return h+'<div class="empty">Операций нет</div>';
+list.forEach(function(x){if(x.date!==cur){cur=x.date;h+='<div class="day">'+fd(cur)+'</div>'}h+=txRow(x,true)});return h}
+
+function plan(){var pl=sortedPl();
+return '<div class="hd"><h2>Будущие операции</h2><button class="lnk" onclick="openSheet(\'plan\',\'exp\')">+ Добавить</button></div>'+
+'<p class="hint">Нажмите «Оплатить», когда потратите: сумма спишется с баланса.</p>'+(pl.length?pl.map(planRow).join(""):'<div class="empty">Пока ничего не запланировано</div>')}
+
+function buckets(){var b=[],t=new Date(),i,k;
+if(P==="year"){for(i=11;i>=0;i--){var d=new Date(t.getFullYear(),t.getMonth()-i,1);k=d.getFullYear()+"-"+pad(d.getMonth()+1);b.push({k:k,l:MON[d.getMonth()],t:MON[d.getMonth()]+" "+d.getFullYear(),inc:0,exp:0,it:[]})}}
+else{var n=+P;for(i=n-1;i>=0;i--){k=addDays(today(),-i);b.push({k:k,l:k.slice(8)+"."+k.slice(5,7),t:fd(k),inc:0,exp:0,it:[]})}}
+var len=P==="year"?7:10;
+S.tx.forEach(function(x){var kk=x.date.slice(0,len);for(var j=0;j<b.length;j++)if(b[j].k===kk){b[j][x.type]+=x.amt;b[j].it.push(x);break}});return b}
+
+function chart(b){var W=340,H=250,y0=118,hh=92,n=b.length,mx=1,s='';
+b.forEach(function(x){mx=Math.max(mx,x.inc,x.exp)});
+var bw=(W-16)/n,g=Math.max(1,bw*.22),st=Math.ceil(n/7);
+b.forEach(function(x,i){var x0=8+i*bw,xx=x0+g/2,w=bw-g,hi=x.inc/mx*hh,he=x.exp/mx*hh,cx=xx+w/2;
+if(x.k===SEL)s+='<rect x="'+x0+'" y="4" width="'+bw+'" height="'+(H-8)+'" rx="4" fill="#eef7f1"/>';
+if(hi)s+='<rect x="'+xx+'" y="'+(y0-hi)+'" width="'+w+'" height="'+hi+'" rx="2" fill="#16a34a"/>';
+if(he)s+='<rect x="'+xx+'" y="'+y0+'" width="'+w+'" height="'+he+'" rx="2" fill="#e5484d"/>';
+if(n<=12){if(x.inc)s+='<text class="tl" x="'+cx+'" y="'+(y0-hi-4)+'">'+cmp(x.inc)+'</text>';if(x.exp)s+='<text class="tl" x="'+cx+'" y="'+(y0+he+11)+'">'+cmp(x.exp)+'</text>'}
+if((n-1-i)%st===0)s+='<text class="tl" x="'+cx+'" y="'+(H-6)+'">'+x.l+'</text>';
+s+='<rect x="'+x0+'" y="0" width="'+bw+'" height="'+H+'" fill="transparent" onclick="pick(\''+x.k+'\')"/>'});
+s+='<line x1="8" x2="'+(W-8)+'" y1="'+y0+'" y2="'+y0+'" stroke="#111" stroke-width="1"/>';
+return '<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Доходы вверх, расходы вниз">'+s+'</svg>'}
+function pick(k){SEL=k;render()}
+function brk(items,type,title){var c={},t=0;items.forEach(function(x){if(x.type===type){c[x.cat]=(c[x.cat]||0)+x.amt;t+=x.amt}});
+var k=Object.keys(c).sort(function(a,b){return c[b]-c[a]});if(!k.length)return '';
+return '<h2>'+title+'</h2>'+k.map(function(n){var p=Math.round(c[n]/t*100);return '<div class="cat"><div><span>'+esc(n)+'</span><span>'+fmt(c[n])+' · '+p+'%</span></div><div class="bar"><i class="'+type+'" style="width:'+p+'%"></i></div></div>'}).join("")}
+
+function stat(){var b=buckets(),all=[],I=0,E=0,sel=null;
+b.forEach(function(x){I+=x.inc;E+=x.exp;all=all.concat(x.it)});
+b.forEach(function(x){if(x.k===SEL)sel=x});
+if(!sel){for(var i=b.length-1;i>=0;i--)if(b[i].it.length){sel=b[i];SEL=sel.k;break}}
+var chips=[["7","7 дней"],["30","30 дней"],["year","Год"]].map(function(c){return '<button class="chip'+(P===c[0]?" on":"")+'" onclick="P=\''+c[0]+'\';SEL=null;render()">'+c[1]+'</button>'}).join("");
+var det=sel?'<div class="det"><h3>'+sel.t+'</h3>'+(sel.it.length?sel.it.slice().reverse().map(function(x){return txRow(x,false)}).join(""):'<div class="empty">Операций нет</div>')+'</div>':'<p class="hint">Нажмите на столбец, чтобы увидеть, на что и когда потрачено.</p>';
+return '<h2>Статистика</h2><div class="chips">'+chips+'</div>'+
+'<div class="sum"><div><small>Доходы</small><b class="inc">+'+fmt(I)+'</b></div><div><small>Расходы</small><b class="exp">−'+fmt(E)+'</b></div><div><small>Итог</small><b>'+fmt(I-E)+'</b></div></div>'+
+'<div class="chart">'+chart(b)+'</div>'+det+brk(all,"exp","Куда уходят деньги")+brk(all,"inc","Откуда приходят")}
+
+function render(){
+document.querySelectorAll("#tabbar button").forEach(function(b){b.classList.toggle("on",b.dataset.t===TAB)});
+["home","hist","plan","stat"].forEach(function(t){$("v_"+t).hidden=(t!==TAB)});
+$("v_home").innerHTML=home();$("v_hist").innerHTML=hist();$("v_plan").innerHTML=plan();$("v_stat").innerHTML=stat();moveInd(TAB!==LT);LT=TAB}
+var IX=null,LT=null;
+function moveInd(an){var ind=$("ind"),b=document.querySelector("#tabbar button.on");if(!b||!ind)return;
+var x=b.offsetLeft,to="translateX("+x+"px)";ind.style.width=b.offsetWidth+"px";
+if(an&&IX!=null&&x!==IX&&ind.animate&&!(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)){
+ind.animate([{transform:"translateX("+IX+"px) scale(1)"},{transform:"translateX("+((IX+x)/2)+"px) scale(1.2,.9)",offset:.45},{transform:to+" scale(1)"}],{duration:480,easing:"cubic-bezier(.3,.9,.3,1)"})}
+ind.style.transform=to;IX=x}
+window.addEventListener("resize",function(){moveInd(false)});
+window.addEventListener("load",function(){moveInd(false)});
+
+function openSheet(mode,type){SH={mode:mode,type:type||"exp",cat:"",amt:"",note:"",date:mode==="plan"?addDays(today(),1):today()};
+SH.cat=(SH.type==="inc"?INC:EXP)[0];drawSheet();$("ov").hidden=false}
+function closeSheet(){$("ov").hidden=true}
+$("ov").onclick=function(e){if(e.target===$("ov"))closeSheet()};
+function keep(){if($("f_amt")){SH.amt=$("f_amt").value;if($("f_note"))SH.note=$("f_note").value;if($("f_date"))SH.date=$("f_date").value}}
+function setType(t){keep();SH.type=t;SH.cat=(t==="inc"?INC:EXP)[0];drawSheet()}
+function pickCat(el,c){SH.cat=c;el.parentNode.querySelectorAll(".chip").forEach(function(x){x.classList.toggle("on",x===el)})}
+function drawSheet(){var m=SH.mode,h;
+if(m==="bal"){h='<h3>Сколько денег у вас сейчас?</h3><input id="f_amt" type="number" inputmode="decimal" step="0.01" value="'+(Math.round(bal()*100)/100)+'"><p class="hint">Все новые доходы и расходы будут считаться от этой суммы.</p>'}
+else{var cs=SH.type==="inc"?INC:EXP;
+h='<h3>'+(m==="plan"?"Будущая операция":"Новая операция")+'</h3><div class="seg"><button class="'+(SH.type==="inc"?"on":"")+'" onclick="setType(\'inc\')">Доход</button><button class="'+(SH.type==="exp"?"on":"")+'" onclick="setType(\'exp\')">Расход</button></div>'+
+'<input id="f_amt" type="number" inputmode="decimal" step="0.01" min="0" placeholder="Сумма, ₽" value="'+esc(SH.amt)+'">'+
+'<div class="chips">'+cs.map(function(c){return '<button class="chip'+(c===SH.cat?" on":"")+'" onclick="pickCat(this,\''+c+'\')">'+c+'</button>'}).join("")+'</div>'+
+'<input id="f_note" type="text" placeholder="На что или от кого (необязательно)" value="'+esc(SH.note)+'">'+
+'<input id="f_date" type="date" value="'+SH.date+'">'+
+(m==="plan"?'<label class="chk"><input id="f_rec" type="checkbox"> Повторять каждый месяц</label>':'')}
+h+='<button class="btn k wide" onclick="saveSheet()">Сохранить</button><button class="lnk wide" style="width:100%" onclick="closeSheet()">Отмена</button>';
+$("sheet").innerHTML=h}
+function saveSheet(){var a=parseFloat($("f_amt").value);
+if(SH.mode==="bal"){if(isNaN(a))return;S.start=a-sumS(S.tx)}
+else{if(!(a>0)){$("f_amt").focus();return}
+var o={id:uid(),type:SH.type,amt:a,cat:SH.cat,note:$("f_note").value.trim(),date:$("f_date").value||today()};
+if(SH.mode==="plan"){o.rec=$("f_rec").checked;S.plans.push(o)}else S.tx.push(o)}
+save();closeSheet();render()}
+render();
+function handleUrl(u){var m=/^finance:\/\/add\?type=(inc|exp)/.exec(u||"");if(m){TAB="home";render();openSheet("tx",m[1])}}
+try{var A=window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.App;
+if(A){A.addListener("appUrlOpen",function(e){handleUrl(e.url)});A.getLaunchUrl().then(function(r){if(r)handleUrl(r.url)}).catch(function(){})}}catch(e){}
+pushBal();
+</script>
+</body>
+</html>

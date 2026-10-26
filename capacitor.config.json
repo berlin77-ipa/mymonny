@@ -1,0 +1,6 @@
+{
+  "appId": "com.example.finance",
+  "appName": "My Money",
+  "webDir": "www",
+  "ios": { "contentInset": "never" }
+}
