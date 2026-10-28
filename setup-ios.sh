@@ -23,6 +23,17 @@ if ! /usr/libexec/PlistBuddy -c "Print :CFBundleURLTypes" "$PLIST" >/dev/null 2>
   /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes:0 string finance" "$PLIST"
 fi
 
+# Иконка приложения
+ICON=ios/App/App/Assets.xcassets/AppIcon.appiconset
+if [ -f assets/icon.png ] && [ -d "$ICON" ]; then
+  cp assets/icon.png "$ICON/AppIcon-512@2x.png"
+  echo '{"images":[{"filename":"AppIcon-512@2x.png","idiom":"universal","platform":"ios","size":"1024x1024"}],"info":{"author":"xcode","version":1}}' > "$ICON/Contents.json"
+fi
+
+# Доступ к камере и фото (для вложений к операциям)
+/usr/libexec/PlistBuddy -c "Add :NSCameraUsageDescription string Фото для прикрепления к операциям" "$PLIST" 2>/dev/null || true
+/usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string Выбор фото для прикрепления к операциям" "$PLIST" 2>/dev/null || true
+
 # Главный экран использует наш ViewController
 SB=ios/App/App/Base.lproj/Main.storyboard
 if grep -q 'customClass="CAPBridgeViewController"' "$SB"; then
